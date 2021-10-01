@@ -3,6 +3,21 @@ import utils
 
 
 b = board.Board()
+
+# CREATE DEFAULT BOARD
+# such as :
+#
+# X X X
+# O O O
+
+b.board[5][0].value = 1
+b.board[4][0].value = 1
+b.board[3][0].value = 1
+
+b.board[5][1].value = -1
+b.board[4][1].value = -1
+b.board[3][1].value = -1
+
 log = board.Log()
 
 pile = utils.Pile()

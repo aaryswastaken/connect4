@@ -47,110 +47,6 @@ class Board:
             self.board[self.size[1] - i - 1][col - 1].value = (1 if player_id == 0 else -1)
             return 0
 
-    @staticmethod
-    def detectLineWinner(t):
-        l = [[l.value for l in c] for c in t]  # For debug purposes
-        winner = 0
-        for line in t:
-            if winner == 0:  # If no winner found
-                f = [0, 0]  # player#0 (-> null), 0 times consecutive
-                for c in line:
-                    if c.value == f[0] and c.value != 0:  # If user is already subscribed and not null player
-                        f[1] += 1  # Increment the consecutive
-                    else:  # Else, we affect the new player, even if it's the null player
-                        f = [c.value, 1]
-
-                    if f[1] == 4:  # Can't be more than 4 if we exit
-                        winner = f[0]  # We have a winner
-                        break  # Exiting the loop
-            else:
-                break  # Because of the statement listed at the beginning of this method, only one winner can be decided
-
-        return winner
-
-    # def nestedDiagonalSearch(self, t: list[list[Cell]], p: list[list[int]], w: list[int], l: Linker):
-    #     """"The Idea here is to build a tree of possibilities. This function is ran on every cell at the bottom and
-    #     then will launch itself on diagonals cases and so one. Recursive search !
-    #     t is the table, persistant parameter
-    #     p are the diagonals coordinates history, list[ [x, y, d] ]. Append if coherent direction, overwritten if
-    #       direction changes
-    #     w is the item containing who is winning [playerId, count] """
-    #
-    #     # If we are in the 4th occurrence, return the winning user
-    #     print(p, w)
-    #     if w[1] == 4:
-    #         return w
-    #
-    #     # Define the {case} as the value of the target cell. Used many times and rather complex
-    #     case = t[self.size[1] - p[-1][1] - 1][p[-1][0]].value
-    #     l.data.append(p[-1])
-    #     # y: self.size[1] - p[-1][1] - 1 -> As the board variable is starting wit lines at the top, we subtract the
-    #     #   actual dimension to make it correct
-    #     # x: p[-1][0] -> select the targeted cell's column
-    #
-    #     if p[-1][1] == 0 or w[0] == 0:  # If we're on the bottom line or last case was null
-    #         w = [case, 1]  # Initialise the like with current player
-    #
-    #     # If we are on an empty case, no winner can be found
-    #     if case == 0:
-    #         print(f"Empty case at {str(p)}")
-    #         return [0, 0]
-    #
-    #     # Compute next directions
-    #     directions = [0]  # X offsets available
-    #     if p[-1][1] != 0:  # If we are on top
-    #         return [0, 0]  # No winner (if there were a winner, there is a `return w` before
-    #
-    #     if p[-1][0] != 0:  # If we're not on the left side
-    #         directions.append(-1)  # -1 -> left direction
-    #
-    #     if p[-1][0] != (self.size[0] - 1):  # Same but for right
-    #         directions.append(1)
-    #         directions.append(2)  # Going horizontal shall we ----->
-    #
-    #     # Check actual case
-    #     if case == w[0]:
-    #         w[1] += 1
-    #     else:
-    #         w = [case, 1]  # We're on the first occurrence of the userid contained in {case}
-    #
-    #     # Launch more !!
-    #     r = []  # Results
-    #     print(f"Directions : {str(directions)} at pos : {str(p[-1])}")
-    #     loopHash = random.randint(0, 1000000)
-    #     for d in directions:
-    #         print(f"Looping on loop #{loopHash}")
-    #         # pN = [pos for pos in p]  # Do deep copy bc we edit this list
-    #         # pN.append([pN[-1][0] + 1, pN[-1][1] + d, d])  # The position at which the next iteration will be launched
-    #
-    #         if d == p[-1][2]:   # If we're on the same direction as before
-    #             wN = w          # Just use last {w}
-    #         else:
-    #             wN = [0, 1]  # Else, reset the w
-    #
-    #         # Launch the new iteration and store the result in r
-    #         if d == 0:
-    #             print(f"Launching new direct vertical worker for level {p[-1][1] + 1}")
-    #
-    #         r.append(self.nestedDiagonalSearch(t, [*p, [p[-1][0] + d, p[-1][1] + 1, d]], wN, l))
-    #         # p[-1][0] + d -> X change
-    #         # p[-1][1] + 1 -> One level higher
-    #
-    #         if d == 2:  # If we do a diagonal, we need to do a horizontal too !
-    #             # The == 1 and not != 0 is to prevent infinite loops (left -> right -> left -> right ...)
-    #             # + no matter what direction (left to right / right to left), the same information is contained
-    #             r.append(self.nestedDiagonalSearch(t, [*p, [p[-1][0] + d, p[-1][1], d]], wN, l))
-    #             # p[-1][0] + 1 -> deltaX = 1
-    #             # p[-1][1] -> Same line
-    #
-    #     R = [0, 0]  # THE result (if no found, fall back to default : [0, 0] => Null user, no occurrences
-    #     for result in r:
-    #         if result[0] != 0:  # If one user is actually found
-    #             R = result
-    #             break
-    #
-    #     return R  # Return the winner to the precedent generation
-
     def nestedDiagonalSearch(self, t: list[list[Cell]], p: list[list[int]], w: list[int], l: Linker):
         """
         This function is designed to recursively find every occurrences of winning player on the board t
@@ -225,32 +121,12 @@ class Board:
                 R = r
                 break
 
-        print(f"results ! : {R}")
-        print(f"Linker data : {len(l.data)}")
+        return R[0]
 
     def state(self) -> int:  # Making the assumption that if there were no winner last move, only one winner
-        # Check lines
-        # winner = self.detectLineWinner(self.board)
-        #
-        # # Check columns
-        # if winner == 0:  # If still no winner
-        #     flipped = []
-        #     for x in range(self.size[0]):  # Flip the table to make columns rows
-        #         temp = []
-        #         for y in range(self.size[1]):
-        #             temp.append(self.board[y][x])
-        #         flipped.append(temp)
-        #
-        #     winner = self.detectLineWinner(flipped)
-        #
-        # # Check diagonals
-        # if winner == 0:
-        #     pass
-        winner = 0
-
         r = self.search()
 
-        return winner
+        return r
 
     def __str__(self, delimiter="\n") -> str:
         output = ""
